@@ -9,9 +9,23 @@ use Illuminate\Http\Request;
 
 class RentalController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $rentals = Rental::with(['vehicle', 'customer'])->get();
+        $query = Rental::query();
+        
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+        
+        if ($request->has('start_date')) {
+            $query->whereDate('start_time', '>=', $request->start_date);
+        }
+        
+        if ($request->has('end_date')) {
+            $query->whereDate('end_time', '<=', $request->end_date);
+        }
+        
+        $rentals = $query->with(['vehicle', 'customer'])->paginate(10);
         return view('rentals.index', compact('rentals'));
     }
 

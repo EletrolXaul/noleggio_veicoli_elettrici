@@ -8,6 +8,27 @@
                 <a href="{{ route('vehicles.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded">Nuovo Veicolo</a>
             </div>
 
+            <form action="{{ route('vehicles.search') }}" method="GET" class="mb-6">
+                <div class="flex gap-4">
+                    <select name="type" class="rounded-md shadow-sm">
+                        <option value="">Tutti i tipi</option>
+                        <option value="car">Auto</option>
+                        <option value="scooter">Scooter</option>
+                        <option value="bike">Bici</option>
+                    </select>
+                    
+                    <div class="flex items-center">
+                        <input type="checkbox" name="status" value="available" id="available" 
+                               class="rounded shadow-sm">
+                        <label for="available" class="ml-2">Solo disponibili</label>
+                    </div>
+                    
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
+                        Cerca
+                    </button>
+                </div>
+            </form>
+
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <table class="min-w-full">
                     <thead>

@@ -61,4 +61,20 @@ class VehicleController extends Controller
         $vehicle->delete();
         return redirect()->route('vehicles.index')->with('success', 'Veicolo eliminato con successo');
     }
+
+    public function search(Request $request)
+    {
+        $query = Vehicle::query();
+        
+        if ($request->has('status')) {
+            $query->where('status', 'available');
+        }
+        
+        if ($request->has('type')) {
+            $query->where('type', $request->type);
+        }
+        
+        $vehicles = $query->get();
+        return view('vehicles.index', compact('vehicles'));
+    }
 }

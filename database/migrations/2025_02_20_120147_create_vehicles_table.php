@@ -13,15 +13,13 @@ return new class extends Migration
     {
         Schema::create('vehicles', function (Blueprint $table) {
             $table->id();
-            $table->string('model');
+            $table->timestamps();
             $table->enum('type', ['car', 'scooter', 'bike']);
             $table->integer('battery_capacity');
             $table->enum('status', ['available', 'rented', 'maintenance']);
             $table->decimal('hourly_rate', 8, 2);
             $table->timestamps();
         });
-
-       
     }
 
     /**
