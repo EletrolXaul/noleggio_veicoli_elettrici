@@ -7,6 +7,11 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
+    protected $middlewareAliases = [
+        // ...
+        'admin' => \App\Http\Middleware\AdminMiddleware::class,
+    ];
+
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command('rentals:check-expired')->hourly();

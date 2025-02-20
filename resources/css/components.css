@@ -1,0 +1,24 @@
+/* resources/css/components.css */
+.nav-link {
+    @apply text-gray-600 hover:text-green-600 px-3 py-2 rounded-md;
+}
+
+.nav-link.active {
+    @apply text-green-600 font-semibold;
+}
+
+.btn-primary {
+    @apply bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700;
+}
+
+.btn-secondary {
+    @apply bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300;
+}
+
+.nav-item {
+    @apply flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white;
+}
+
+.nav-item.active {
+    @apply bg-gray-700 text-white;
+}
