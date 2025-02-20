@@ -8,7 +8,7 @@ class StoreVehicleRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return auth()->user()->isAdmin();
+        return $this->user()?->isAdmin();
     }
 
     public function rules(): array

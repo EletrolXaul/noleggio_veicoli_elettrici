@@ -50,6 +50,7 @@
                         <h2 class="text-xl font-semibold mb-4">Prenota Ora</h2>
                         <form action="{{ route('rentals.book', $vehicle) }}" method="POST" class="space-y-4">
                             @csrf
+                            <input type="hidden" name="vehicle_id" value="{{ $vehicle->id }}">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Data e Ora Inizio</label>
                                 <input type="datetime-local" name="start_time" 
@@ -60,7 +61,9 @@
                                 <label class="block text-sm font-medium text-gray-700">Data e Ora Fine</label>
                                 <input type="datetime-local" name="end_time" 
                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
-                                       min="{{ now()->format('Y-m-d\TH:i') }}" required>
+                                       min="{{ now()->format('Y-m-d\TH:i') }}"
+                                       max="{{ now()->addMonth()->format('Y-m-d\TH:i') }}"
+                                       required>
                             </div>
                             <button type="submit" class="w-full bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
                                 Prenota

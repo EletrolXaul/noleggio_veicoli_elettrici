@@ -54,7 +54,7 @@ class Rental extends Model
             'start_time' => ['required', 'date', 'after:now'],
             'end_time' => ['required', 'date', 'after:start_time', 'before:start_time +1 month'],
             'vehicle_id' => ['required', 'exists:vehicles,id'],
-            'user_id' => ['required', 'exists:users,id'],
+            'user_id' => ['required', 'exists:users,id']
         ];
     }
 

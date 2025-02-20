@@ -23,7 +23,9 @@ Route::middleware('guest')->group(function () {
 });
 
 // Rotta logout (richiede autenticazione)
-Route::post('logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
+Route::post('logout', [LoginController::class, 'logout'])
+    ->name('logout')
+    ->middleware('auth');
 
 // Rotte pubbliche
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -47,6 +49,11 @@ Route::middleware('auth')->group(function () {
 });
 
 // Rotte admin protette
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+    // altre route admin...
+});
+
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     // Dashboard admin
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');

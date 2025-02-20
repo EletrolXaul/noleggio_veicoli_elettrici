@@ -8,13 +8,16 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @method bool isAdmin()
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**
-     * I ruoli disponibili per gli utenti
+     * Costanti per i ruoli degli utenti
      */
     public const ROLE_ADMIN = 'admin';
     public const ROLE_USER = 'user';
@@ -28,7 +31,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role' // aggiungiamo il campo role
+        'role'
     ];
 
     /**
