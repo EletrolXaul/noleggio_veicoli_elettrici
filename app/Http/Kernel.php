@@ -35,8 +35,6 @@ class Kernel extends HttpKernel
     // Questa è la parte che già hai
     protected $middlewareAliases = [
         'auth' => \App\Http\Middleware\Authenticate::class,
-        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
-        'admin' => \App\Http\Middleware\AdminMiddleware::class,  // Aggiungi questa riga
+        'admin' => \App\Http\Middleware\AdminMiddleware::class,
     ];
 }

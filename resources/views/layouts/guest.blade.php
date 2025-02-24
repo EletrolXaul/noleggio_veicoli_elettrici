@@ -26,7 +26,7 @@
                 <div class="flex items-center">
                     @auth
                         <a href="{{ route('dashboard') }}" class="btn-primary">Dashboard</a>
-                        <form method="POST" action="{{ route('logout') }}" class="ml-4">
+                        <form method="POST" action="{{ route('logout') }}" class="inline">
                             @csrf
                             <button type="submit" class="btn-secondary">Logout</button>
                         </form>

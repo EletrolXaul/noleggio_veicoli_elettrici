@@ -6,22 +6,25 @@ use App\Http\Controllers\Controller;
 use App\Models\Vehicle;
 use App\Models\Rental;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class AdminDashboardController extends Controller
 {
     public function index()
     {
+        // Statistiche
         $stats = [
             'total_vehicles' => Vehicle::count(),
             'available_vehicles' => Vehicle::where('status', 'available')->count(),
             'active_rentals' => Rental::where('status', 'active')->count(),
-            'total_users' => User::where('role', 'user')->count(),
+            'total_users' => User::where('role', 'user')->count()
         ];
 
+        // Veicoli più noleggiati
         $popularVehicles = Vehicle::withCount(['rentals' => function($query) {
             $query->where('status', 'completed');
         }])
-        ->orderBy('rentals_count', 'desc')
+        ->orderByDesc('rentals_count')
         ->take(5)
         ->get();
 

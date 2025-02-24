@@ -1,4 +1,3 @@
-<?php
 @extends('layouts.guest')
 @section('title', 'I Miei Noleggi')
 @section('content')

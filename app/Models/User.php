@@ -57,9 +57,9 @@ class User extends Authenticatable
     /**
      * Verifica se l'utente è un amministratore
      */
-    public function isAdmin(): bool
+    public function isAdmin()
     {
-        return $this->role === self::ROLE_ADMIN;
+        return $this->role === 'admin';
     }
 
     /**

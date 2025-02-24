@@ -50,26 +50,10 @@ Route::middleware('auth')->group(function () {
 
 // Rotte admin protette
 Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-    // altre route admin...
-});
-
-Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
-    // Dashboard admin
-    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-    
-    // Gestione veicoli (CRUD completo)
-    Route::resource('vehicles', AdminVehicleController::class)->names('admin.vehicles');
-    Route::post('vehicles/{vehicle}/toggle-status', [AdminVehicleController::class, 'toggleStatus'])
-        ->name('admin.vehicles.toggle-status');
-    
-    // Gestione noleggi (CRUD completo + azioni specifiche)
-    Route::resource('rentals', AdminRentalController::class)->names('admin.rentals');
-    Route::post('rentals/{rental}/complete', [AdminRentalController::class, 'complete'])
-        ->name('admin.rentals.complete');
-    Route::post('rentals/{rental}/cancel', [AdminRentalController::class, 'cancel'])
-        ->name('admin.rentals.cancel');
-    
-    // Gestione clienti (CRUD completo)
-    Route::resource('customers', AdminCustomerController::class)->names('admin.customers');
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::resource('vehicles', AdminVehicleController::class);
+        Route::resource('rentals', AdminRentalController::class);
+        Route::resource('customers', AdminCustomerController::class);
+    });
 });
