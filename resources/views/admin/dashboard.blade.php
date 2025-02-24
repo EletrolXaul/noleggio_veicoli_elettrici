@@ -31,7 +31,6 @@
                     <thead>
                         <tr>
                             <th class="px-6 py-3 border-b">Modello</th>
-                            <th class="px-6 py-3 border-b">Tipo</th>
                             <th class="px-6 py-3 border-b">Noleggi Completati</th>
                         </tr>
                     </thead>
@@ -39,7 +38,6 @@
                         @foreach($popularVehicles as $vehicle)
                             <tr>
                                 <td class="px-6 py-4 border-b">{{ $vehicle->model }}</td>
-                                <td class="px-6 py-4 border-b">{{ $vehicle->type }}</td>
                                 <td class="px-6 py-4 border-b">{{ $vehicle->rentals_count }}</td>
                             </tr>
                         @endforeach

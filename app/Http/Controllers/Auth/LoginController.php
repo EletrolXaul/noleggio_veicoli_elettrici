@@ -31,11 +31,13 @@ class LoginController extends Controller
             /** @var \App\Models\User|null $user */
             $user = Auth::user();
             
-            return redirect()->intended(
-                $user?->isAdmin() ? 
-                    route('admin.dashboard') : 
-                    route('dashboard')
-            );
+            // Reindirizza in base al ruolo
+            if ($user?->isAdmin()) {
+                return redirect()->route('admin.dashboard');
+            }
+
+            // Per gli utenti normali
+            return redirect()->route('user.dashboard');
         }
 
         return back()

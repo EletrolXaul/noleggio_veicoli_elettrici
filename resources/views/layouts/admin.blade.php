@@ -20,10 +20,38 @@
 <body class="bg-gray-100">
     <div class="flex h-screen">
         {{-- Sidebar Admin --}}
-        @include('layouts.partials.admin-sidebar')
+        {{-- @include('layouts.partials.admin-sidebar') --}}
+
+        <nav class="w-64 bg-gray-800 h-screen fixed">
+            <div class="p-6">
+                <h1 class="text-white text-2xl font-bold">Admin Panel</h1>
+            </div>
+            <ul class="mt-6">
+                <li>
+                    <a href="{{ route('admin.dashboard') }}" class="flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700">
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.vehicles.index') }}" class="flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700">
+                        <span>Veicoli</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.rentals.index') }}" class="flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700">
+                        <span>Noleggi</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.customers.index') }}" class="flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700">
+                        <span>Clienti</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
 
         {{-- Contenuto principale --}}
-        <div class="flex-1 overflow-x-hidden overflow-y-auto">
+        <div class="flex-1 pl-64 overflow-x-hidden overflow-y-auto"> {{-- Aggiungi pl-64 per compensare la navbar fixed --}}
             {{-- Header --}}
             <header class="bg-white shadow">
                 <div class="max-w-7xl mx-auto py-6 px-4">
@@ -51,6 +79,11 @@
             </main>
         </div>
     </div>
+
+    <form method="POST" action="{{ route('logout') }}" class="inline">
+        @csrf
+        <button type="submit" class="btn-secondary">Logout</button>
+    </form>
 
     {{-- Scripts aggiuntivi --}}
     @stack('scripts')

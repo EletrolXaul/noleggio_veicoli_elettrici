@@ -25,10 +25,10 @@
                 </div>
                 <div class="flex items-center">
                     @auth
-                        <a href="{{ route('dashboard') }}" class="btn-primary">Dashboard</a>
+                        <a href="{{ route('user.dashboard') }}" class="btn-primary">Dashboard</a>
                         <form method="POST" action="{{ route('logout') }}" class="inline">
                             @csrf
-                            <button type="submit" class="btn-secondary">Logout</button>
+                            <button type="submit" class="btn-secondary ml-4">Logout</button>
                         </form>
                     @else
                         <a href="{{ route('login') }}" class="btn-primary">Accedi</a>

@@ -37,18 +37,17 @@ Route::post('/contact', [ContactController::class, 'send'])->name('contact.send'
 
 // Rotte utente autenticato
 Route::middleware('auth')->group(function () {
-    // Dashboard e profilo
-    Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
+    // Rotte dashboard utente
+    Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard');
+    Route::get('/rentals', [UserDashboardController::class, 'rentals'])->name('user.rentals');
+    Route::get('/rentals/{rental}', [UserDashboardController::class, 'showRental'])->name('user.rentals.show');
+    
+    // Rotte profilo utente
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    
-    // Gestione noleggi utente
-    Route::get('/my-rentals', [UserDashboardController::class, 'rentals'])->name('user.rentals');
-    Route::post('/rentals/book/{vehicle}', [UserDashboardController::class, 'bookVehicle'])->name('rentals.book');
-    Route::get('/rentals/{rental}', [UserDashboardController::class, 'showRental'])->name('rentals.show');
 });
 
-// Rotte admin protette  
+// Rotte admin protette
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');

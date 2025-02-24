@@ -12,7 +12,6 @@ class AdminDashboardController extends Controller
 {
     public function index()
     {
-        // Statistiche
         $stats = [
             'total_vehicles' => Vehicle::count(),
             'available_vehicles' => Vehicle::where('status', 'available')->count(),
@@ -20,7 +19,6 @@ class AdminDashboardController extends Controller
             'total_users' => User::where('role', 'user')->count()
         ];
 
-        // Veicoli più noleggiati
         $popularVehicles = Vehicle::withCount(['rentals' => function($query) {
             $query->where('status', 'completed');
         }])

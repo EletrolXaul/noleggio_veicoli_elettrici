@@ -15,5 +15,7 @@ class TrimStrings extends Middleware
         'current_password',
         'password',
         'password_confirmation',
+        'email',
+        'license_number' // Non trimmare il numero di licenza
     ];
 }
