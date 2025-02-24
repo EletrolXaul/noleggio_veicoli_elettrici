@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
+ * @property string $role
  * @method bool isAdmin()
  */
 class User extends Authenticatable
@@ -57,7 +58,7 @@ class User extends Authenticatable
     /**
      * Verifica se l'utente è un amministratore
      */
-    public function isAdmin()
+    public function isAdmin(): bool
     {
         return $this->role === 'admin';
     }

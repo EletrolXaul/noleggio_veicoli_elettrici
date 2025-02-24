@@ -16,7 +16,7 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::check() || !Auth::user()->isAdmin()) {
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
             return redirect()->route('dashboard')
                 ->with('error', 'Non hai i permessi per accedere a questa sezione');
         }

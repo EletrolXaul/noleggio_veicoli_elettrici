@@ -48,7 +48,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/rentals/{rental}', [UserDashboardController::class, 'showRental'])->name('rentals.show');
 });
 
-// Rotte admin protette
+// Rotte admin protette  
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
