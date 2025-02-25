@@ -49,35 +49,50 @@
                     {{-- Form di contatto --}}
                     <div>
                         <h2 class="text-2xl font-semibold mb-4">Inviaci un Messaggio</h2>
-                        <form action="{{ route('contact.send') }}" method="POST" class="space-y-4">
+                        <form action="{{ route('contact.send') }}" method="POST" class="space-y-6">
                             @csrf
                             <div>
                                 <label for="name" class="block text-sm font-medium text-gray-700">Nome</label>
                                 <input type="text" name="name" id="name" required 
-                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                       value="{{ old('name') }}">
+                                @error('name')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <div>
                                 <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
                                 <input type="email" name="email" id="email" required 
-                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                       value="{{ old('email') }}">
+                                @error('email')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <div>
                                 <label for="subject" class="block text-sm font-medium text-gray-700">Oggetto</label>
                                 <input type="text" name="subject" id="subject" required 
-                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                       value="{{ old('subject') }}">
+                                @error('subject')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <div>
                                 <label for="message" class="block text-sm font-medium text-gray-700">Messaggio</label>
                                 <textarea name="message" id="message" rows="4" required
-                                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">{{ old('message') }}</textarea>
+                                @error('message')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
                             </div>
 
-                            <div>
+                            <div class="flex justify-end">
                                 <button type="submit" 
-                                        class="w-full bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                        class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
                                     Invia Messaggio
                                 </button>
                             </div>

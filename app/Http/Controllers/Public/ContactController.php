@@ -21,7 +21,8 @@ class ContactController extends Controller
             'message' => 'required|string'
         ]);
 
-        // Logica per l'invio del messaggio
+        // Qui puoi aggiungere la logica per l'invio effettivo del messaggio
+        // Per esempio, salvare nel database o inviare una mail
 
         return back()->with('success', 'Messaggio inviato con successo!');
     }

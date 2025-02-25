@@ -31,7 +31,10 @@ Route::post('logout', [LoginController::class, 'logout'])
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/vehicles', [VehicleController::class, 'index'])->name('vehicles.public');
 Route::get('/about', [PageController::class, 'about'])->name('about');
+
+// Rotte per i contatti
 Route::get('/contact', [ContactController::class, 'show'])->name('contact');
+Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
 
 // Rotte utente autenticato
 Route::middleware('auth')->group(function () {
