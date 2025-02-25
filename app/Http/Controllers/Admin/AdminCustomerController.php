@@ -11,10 +11,12 @@ class AdminCustomerController extends Controller
     public function index()
     {
         $customers = User::where('role', 'user')
-                        ->withCount('rentals')
-                        ->orderBy('created_at', 'desc')
-                        ->paginate(10);
-                        
+            ->withCount(['rentals as active_rentals_count' => function($query) {
+                $query->where('status', 'active');
+            }])
+            ->latest()
+            ->paginate(10);
+
         return view('admin.customers.index', compact('customers'));
     }
 

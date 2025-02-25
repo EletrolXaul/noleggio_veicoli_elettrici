@@ -29,7 +29,11 @@
                         <tr>
                             <td class="px-6 py-4 border-b">{{ $customer->name }}</td>
                             <td class="px-6 py-4 border-b">{{ $customer->email }}</td>
-                            <td class="px-6 py-4 border-b">{{ $customer->active_rentals_count }}</td>
+                            <td class="px-6 py-4 border-b">
+                                <span class="px-2 py-1 rounded-full text-sm {{ $customer->active_rentals_count > 0 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                    {{ $customer->active_rentals_count }}
+                                </span>
+                            </td>
                             <td class="px-6 py-4 border-b">{{ $customer->created_at->format('d/m/Y') }}</td>
                             <td class="px-6 py-4 border-b">
                                 <div class="flex gap-2">

@@ -45,9 +45,8 @@
                             <td class="px-6 py-4 border-b">€{{ $vehicle->hourly_rate }}</td>
                             <td class="px-6 py-4 border-b">
                                 <a href="{{ route('vehicles.show', $vehicle) }}" class="text-blue-500">Dettagli</a>
-                                <a href="{{ route('vehicles.edit', $vehicle) }}"
-                                    class="text-yellow-500 ml-2">Modifica</a>
-                                <form action="{{ route('vehicles.destroy', $vehicle) }}" method="POST" class="inline">
+                                <a href="{{ route('admin.vehicles.edit', $vehicle) }}" class="text-yellow-500 ml-2">Modifica</a>
+                                <form action="{{ route('admin.vehicles.destroy', $vehicle) }}" method="POST" class="inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-500 ml-2"

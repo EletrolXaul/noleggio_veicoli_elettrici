@@ -54,8 +54,18 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        
+        // Rotte veicoli
         Route::resource('vehicles', AdminVehicleController::class);
+        
+        // Rotte noleggi con azioni aggiuntive
         Route::resource('rentals', AdminRentalController::class);
+        Route::post('/rentals/{rental}/complete', [AdminRentalController::class, 'complete'])
+            ->name('rentals.complete');
+        Route::post('/rentals/{rental}/cancel', [AdminRentalController::class, 'cancel'])
+            ->name('rentals.cancel');
+            
+        // Rotte clienti
         Route::resource('customers', AdminCustomerController::class);
     });
 });

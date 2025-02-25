@@ -43,4 +43,14 @@ class User extends Authenticatable
     {
         return $this->role === self::ROLE_ADMIN;
     }
+
+    public function rentals(): HasMany
+    {
+        return $this->hasMany(Rental::class);
+    }
+
+    public function activeRentals()
+    {
+        return $this->rentals()->where('status', 'active');
+    }
 }
