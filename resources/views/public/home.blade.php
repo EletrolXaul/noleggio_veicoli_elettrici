@@ -3,55 +3,47 @@
 @section('title', 'Home')
 
 @section('content')
-<div class="relative">
-    {{-- Hero Section --}}
-    <div class="relative bg-gray-900">
-        <div class="mx-auto max-w-7xl px-4 py-24 sm:py-32 lg:flex lg:items-center lg:gap-x-10 lg:px-8 lg:py-40">
-            <div class="mx-auto max-w-2xl lg:mx-0 lg:flex-auto">
-                <h1 class="text-4xl font-bold tracking-tight text-white sm:text-6xl">
-                    Mobilità Elettrica Sostenibile
-                </h1>
-                <p class="mt-6 text-lg leading-8 text-gray-300">
-                    Scopri il futuro della mobilità con la nostra flotta di veicoli elettrici.
-                    Zero emissioni, massima efficienza.
-                </p>
-                <div class="mt-10 flex items-center gap-x-6">
-                    <a href="{{ route('vehicles.public') }}" class="btn-primary">
-                        Scopri i Veicoli
-                    </a>
-                    <a href="{{ route('about') }}" class="text-sm font-semibold leading-6 text-white">
-                        Scopri di più <span aria-hidden="true">→</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Veicoli in Evidenza --}}
-    <div class="bg-white py-24 sm:py-32">
-        <div class="mx-auto max-w-7xl px-6 lg:px-8">
-            <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                I Nostri Veicoli
-            </h2>
-            <div class="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                @foreach($availableVehicles as $vehicle)
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
-                        <div class="p-6">
-                            <h3 class="text-lg font-semibold">{{ $vehicle->model }}</h3>
-                            <p class="mt-2 text-gray-600">{{ $vehicle->type }}</p>
-                            <p class="mt-2">
-                                <span class="text-sm font-medium text-gray-500">Batteria:</span>
-                                <span class="ml-1">{{ $vehicle->battery_capacity }}%</span>
-                            </p>
-                            <p class="mt-4 text-2xl font-bold">€{{ $vehicle->hourly_rate }}/ora</p>
-                            <a href="{{ route('vehicles.show', $vehicle) }}" 
-                               class="mt-4 inline-block text-blue-600 hover:text-blue-800">
-                                Dettagli →
-                            </a>
-                        </div>
+<div class="py-12">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        {{-- Hero Section con CTA per login/registrazione --}}
+        <div class="bg-white rounded-lg shadow-xl p-8 mb-8">
+            <h1 class="text-4xl font-bold mb-4">Noleggio Veicoli Elettrici</h1>
+            <p class="text-xl text-gray-600 mb-6">Scopri la nostra selezione di veicoli elettrici per una mobilità sostenibile</p>
+            @guest
+                <div class="space-y-4">
+                    <p class="text-lg text-gray-700">Per noleggiare un veicolo è necessario effettuare l'accesso o registrarsi.</p>
+                    <div class="space-x-4">
+                        <a href="{{ route('login') }}" class="inline-block bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600">Accedi</a>
+                        <a href="{{ route('register') }}" class="inline-block bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600">Registrati</a>
                     </div>
-                @endforeach
-            </div>
+                </div>
+            @endguest
+        </div>
+
+        {{-- Lista Veicoli Disponibili --}}
+        <div class="bg-white rounded-lg shadow-xl p-8">
+            <h2 class="text-2xl font-bold mb-6">Veicoli Disponibili</h2>
+            @if($availableVehicles->count() > 0)
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach($availableVehicles as $vehicle)
+                        <div class="bg-gray-50 rounded-lg p-6">
+                            <h3 class="font-bold text-lg mb-2">{{ $vehicle->model }}</h3>
+                            <p class="text-gray-600 mb-2">Tipo: {{ $vehicle->type }}</p>
+                            <p class="text-gray-600 mb-4">€{{ $vehicle->hourly_rate }}/ora</p>
+                            @guest
+                                <p class="text-sm text-gray-500">Accedi per noleggiare questo veicolo</p>
+                            @else
+                                <a href="{{ route('vehicles.show', $vehicle) }}" 
+                                   class="inline-block bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+                                    Dettagli e Prenotazione
+                                </a>
+                            @endguest
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <p class="text-gray-500">Nessun veicolo disponibile al momento.</p>
+            @endif
         </div>
     </div>
 </div>

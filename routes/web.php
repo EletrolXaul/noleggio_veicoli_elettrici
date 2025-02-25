@@ -30,10 +30,8 @@ Route::post('logout', [LoginController::class, 'logout'])
 // Rotte pubbliche
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/vehicles', [VehicleController::class, 'index'])->name('vehicles.public');
-Route::get('/vehicles/{vehicle}', [VehicleController::class, 'show'])->name('vehicles.show');
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/contact', [ContactController::class, 'show'])->name('contact');
-Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
 
 // Rotte utente autenticato
 Route::middleware('auth')->group(function () {
@@ -45,6 +43,11 @@ Route::middleware('auth')->group(function () {
     // Rotte profilo utente
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    
+    // Rotte prenotazione veicoli
+    Route::post('/vehicles/{vehicle}/book', [UserDashboardController::class, 'bookVehicle'])
+        ->name('rentals.book');
+    Route::get('/vehicles/{vehicle}', [VehicleController::class, 'show'])->name('vehicles.show');
 });
 
 // Rotte admin protette
