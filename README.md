@@ -72,8 +72,15 @@ npm run dev
 ```
 
 ### 8. Avvia il server locale
+Puoi avviare il server in due modi:
+
+**Metodo standard:**
 ```sh
 php artisan serve
+```
+Metodo completo (consigliato per lo sviluppo):
+```sh
+composer dev
 ```
 
 ### 9. Accedi all'applicazione
