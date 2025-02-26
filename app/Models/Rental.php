@@ -51,8 +51,19 @@ class Rental extends Model
     public static function rules(): array
     {
         return [
-            'start_time' => ['required', 'date', 'after:now'],
-            'end_time' => ['required', 'date', 'after:start_time', 'before:start_time +1 month'],
+            'start_time' => [
+                'required',
+                'date',
+                'after_or_equal:' . now()->format('Y-m-d H:i'),
+                'before:+12 months'
+            ],
+            'end_time' => [
+                'required',
+                'date',
+                'after:start_time',
+                // Problema qui: questa regola potrebbe non funzionare come previsto
+                // 'before:start_time +6 months'
+            ],
             'vehicle_id' => ['required', 'exists:vehicles,id'],
             'user_id' => ['required', 'exists:users,id']
         ];

@@ -44,6 +44,38 @@
     </main>
 
     @include('layouts.partials.guest-footer')
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Trova tutti i pulsanti di toggle password
+            var toggleButtons = document.querySelectorAll('.toggle-password');
+            
+            // Aggiungi event listener a ciascuno
+            toggleButtons.forEach(function(button) {
+                button.addEventListener('click', function(e) {
+                    // Impedisci l'invio del form
+                    e.preventDefault();
+                    
+                    // Trova l'elemento input associato utilizzando l'attributo data-target
+                    var targetId = this.getAttribute('data-target');
+                    var passwordInput = document.getElementById(targetId);
+                    
+                    // Toggle del tipo di input
+                    if (passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                        // Quando mostro la password (testo in chiaro), mostro l'icona dell'occhio barrato
+                        this.querySelector('.eye-open').classList.add('hidden');
+                        this.querySelector('.eye-closed').classList.remove('hidden');
+                    } else {
+                        passwordInput.type = 'password';
+                        // Quando nascondo la password, mostro l'icona dell'occhio normale
+                        this.querySelector('.eye-open').classList.remove('hidden');
+                        this.querySelector('.eye-closed').classList.add('hidden');
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
 

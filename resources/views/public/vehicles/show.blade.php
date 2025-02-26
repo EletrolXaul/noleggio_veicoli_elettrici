@@ -51,21 +51,38 @@
                         <form action="{{ route('rentals.book', $vehicle) }}" method="POST" class="space-y-4">
                             @csrf
                             <input type="hidden" name="vehicle_id" value="{{ $vehicle->id }}">
+                            <input type="hidden" name="user_id" value="{{ Auth::id() }}">
+                            
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Data e Ora Inizio</label>
-                                <input type="datetime-local" name="start_time" 
-                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
-                                       min="{{ now()->format('Y-m-d\TH:i') }}" required>
+                                <input type="datetime-local" 
+                                       name="start_time" 
+                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500" 
+                                       min="{{ now()->format('Y-m-d\TH:i') }}"
+                                       max="{{ now()->addYear()->format('Y-m-d\TH:i') }}"
+                                       value="{{ old('start_time') }}"
+                                       required>
+                                @error('start_time')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
                             </div>
+
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Data e Ora Fine</label>
-                                <input type="datetime-local" name="end_time" 
-                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                <input type="datetime-local" 
+                                       name="end_time" 
+                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                        min="{{ now()->format('Y-m-d\TH:i') }}"
-                                       max="{{ now()->addMonth()->format('Y-m-d\TH:i') }}"
+                                       max="{{ now()->addYear()->addMonths(6)->format('Y-m-d\TH:i') }}"
+                                       value="{{ old('end_time') }}"
                                        required>
+                                @error('end_time')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
                             </div>
-                            <button type="submit" class="w-full bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+
+                            <button type="submit" 
+                                    class="w-full bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
                                 Prenota
                             </button>
                         </form>
@@ -92,4 +109,57 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const startTimeInput = document.querySelector('input[name="start_time"]');
+    const endTimeInput = document.querySelector('input[name="end_time"]');
+
+    // Funzione per verificare la validità delle date
+    function validateDates() {
+        if (startTimeInput.value && endTimeInput.value) {
+            const startDate = new Date(startTimeInput.value);
+            const endDate = new Date(endTimeInput.value);
+            
+            // Controlla che ci sia almeno un'ora di differenza (3600000 millisecondi = 1 ora)
+            const diff = endDate.getTime() - startDate.getTime();
+            if (diff < 3600000) {
+                alert("La durata minima del noleggio è di 1 ora.");
+                endTimeInput.value = '';
+                return false;
+            }
+        }
+        return true;
+    }
+
+    startTimeInput.addEventListener('change', function() {
+        const startDate = new Date(this.value);
+        const maxEndDate = new Date(startDate);
+        // Modifica per permettere fino a 18 mesi (1 anno e mezzo)
+        maxEndDate.setMonth(startDate.getMonth() + 18); 
+        
+        // Imposta la data minima per end_time uguale alla data di inizio + 1 ora
+        const minEndDate = new Date(startDate);
+        minEndDate.setHours(minEndDate.getHours() + 1);
+        
+        endTimeInput.min = minEndDate.toISOString().slice(0, 16);
+        endTimeInput.max = maxEndDate.toISOString().slice(0, 16);
+        
+        if (endTimeInput.value && new Date(endTimeInput.value) <= startDate) {
+            endTimeInput.value = '';
+        } else if (endTimeInput.value && new Date(endTimeInput.value) > maxEndDate) {
+            endTimeInput.value = maxEndDate.toISOString().slice(0, 16);
+        }
+    });
+    
+    endTimeInput.addEventListener('change', validateDates);
+    
+    // Aggiungi validazione al form submit
+    document.querySelector('form').addEventListener('submit', function(e) {
+        if (!validateDates()) {
+            e.preventDefault();
+        }
+    });
+});
+</script>
 @endsection

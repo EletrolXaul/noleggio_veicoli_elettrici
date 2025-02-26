@@ -50,7 +50,7 @@ class UserDashboardController extends Controller
 
     public function bookVehicle(Request $request, Vehicle $vehicle)
     {
-        $validated = $request->validate(Rental::rules());
+        $validated = $request->validate(Rental::rules($request->all()));
         
         try {
             return DB::transaction(function() use ($validated, $vehicle) {
@@ -61,33 +61,46 @@ class UserDashboardController extends Controller
                 $startTime = Carbon::parse($validated['start_time']);
                 $endTime = Carbon::parse($validated['end_time']);
                 
-                // Controlla sovrapposizioni
-                $existingRental = Rental::where('vehicle_id', $vehicle->id)
-                    ->where('status', 'active')
-                    ->where(function($query) use ($startTime, $endTime) {
-                        $query->whereBetween('start_time', [$startTime, $endTime])
-                            ->orWhereBetween('end_time', [$startTime, $endTime]);
-                    })->exists();
+                // Debug per verificare che le date siano correttamente parsate
+                // Log::info("Start time: " . $startTime->toDateTimeString());
+                // Log::info("End time: " . $endTime->toDateTimeString());
 
-                if ($existingRental) {
+                // Verifica sovrapposizioni
+                if ($vehicle->hasOverlappingRentals($startTime, $endTime)) {
                     throw new \Exception('Il veicolo è già prenotato in questo periodo.');
                 }
 
-                $hours = $endTime->diffInHours($startTime);
+                // Verifica durata minima e massima
+                if ($endTime->lt($startTime->copy()->addHour())) {
+                    throw new \Exception('La durata minima del noleggio è di 1 ora.');
+                }
+
+                if ($endTime->gt($startTime->copy()->addDays(180))) { // 180 giorni (6 mesi)
+                    throw new \Exception('La durata massima del noleggio è di 180 giorni.');
+                }
+
+                // Calcola le ore per il costo totale
+                $hours = $endTime->diffInHours($startTime, false);
+                if ($hours <= 0) {
+                    $hours = 1; // Minimo un'ora per il calcolo del costo
+                }
+
                 $totalCost = $hours * $vehicle->hourly_rate;
 
                 $rental = Rental::create([
                     'vehicle_id' => $vehicle->id,
-                    'user_id' => Auth::id(), // Modifica qui
+                    'user_id' => Auth::id(),
                     'start_time' => $startTime,
                     'end_time' => $endTime,
                     'total_cost' => $totalCost,
-                    'status' => 'active'
+                    'status' => Rental::STATUS_ACTIVE
                 ]);
 
                 $vehicle->update(['status' => 'rented']);
-                
-                return redirect()->route('user.rentals')->with('success', 'Noleggio effettuato con successo!');
+
+                // Usa la variabile $rental in qualche modo
+                return redirect()->route('user.rentals')
+                               ->with('success', 'Noleggio #' . $rental->id . ' effettuato con successo!');
             });
         } catch (\Exception $e) {
             return back()->withErrors(['error' => $e->getMessage()]);
