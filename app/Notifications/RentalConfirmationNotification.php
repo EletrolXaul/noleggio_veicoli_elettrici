@@ -12,8 +12,11 @@ class RentalConfirmationNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(protected Rental $rental)
+    protected Rental $rental;
+
+    public function __construct(Rental $rental)
     {
+        $this->rental = $rental;
     }
 
     public function via(object $notifiable): array
