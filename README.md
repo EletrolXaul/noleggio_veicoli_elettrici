@@ -78,10 +78,16 @@ Puoi avviare il server in due modi:
 ```sh
 php artisan serve
 ```
-Metodo completo (consigliato per lo sviluppo):
+**Metodo completo (consigliato per lo sviluppo):**
 ```sh
 composer dev
 ```
+
+Questo comando avvia contemporaneamente:
+
+- Il server Laravel `(php artisan serve)`
+- Il worker per le code `(php artisan queue:listen)`
+- Il compilatore degli asset frontend `(npm run dev)`
 
 ### 9. Accedi all'applicazione
 
