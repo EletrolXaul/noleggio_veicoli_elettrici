@@ -32,7 +32,7 @@ class CheckExpiredRentals extends Command
             ->get();
             
         foreach($expiredRentals as $rental) {
-            $rental->customer->notify(new RentalExpiredNotification($rental));
+            $rental->user->notify(new RentalExpiredNotification($rental));
             $this->info("Notification sent for rental #{$rental->id}");
         }
 

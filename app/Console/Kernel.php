@@ -10,7 +10,8 @@ class Kernel extends ConsoleKernel
 
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('rentals:check-expired')->hourly();
+        $schedule->command('rentals:send-notifications')->dailyAt('08:00');
+        $schedule->command('rentals:check-expired')->dailyAt('08:30');
     }
 
     protected function commands(): void

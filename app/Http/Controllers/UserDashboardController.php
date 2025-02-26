@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Rental;
 use App\Models\Vehicle;
+use App\Notifications\RentalConfirmationNotification;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth; // Aggiungi questo import
+use Illuminate\Support\Facades\Auth;
 
 class UserDashboardController extends Controller
 {
@@ -22,7 +23,7 @@ class UserDashboardController extends Controller
             ->where('status', Rental::STATUS_ACTIVE)
             ->with('vehicle')
             ->get();
-        
+
         $stats = [
             'active_rentals' => Rental::forCurrentUser()
                 ->where('status', Rental::STATUS_ACTIVE)
@@ -34,33 +35,33 @@ class UserDashboardController extends Controller
                 ->where('status', Rental::STATUS_COMPLETED)
                 ->sum('total_cost')
         ];
-                              
+
         return view('user.dashboard', compact('activeRentals', 'stats'));
     }
 
     public function rentals()
     {
         $rentals = Rental::where('user_id', Auth::id()) // Modifica qui
-                        ->with(['vehicle'])
-                        ->orderBy('created_at', 'desc')
-                        ->paginate(10);
-                        
+            ->with(['vehicle'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
         return view('user.rentals.index', compact('rentals'));
     }
 
     public function bookVehicle(Request $request, Vehicle $vehicle)
     {
         $validated = $request->validate(Rental::rules($request->all()));
-        
+
         try {
-            return DB::transaction(function() use ($validated, $vehicle) {
+            return DB::transaction(function () use ($validated, $vehicle) {
                 if (!$vehicle->isAvailable()) {
                     throw new \Exception('Questo veicolo non è disponibile.');
                 }
 
                 $startTime = Carbon::parse($validated['start_time']);
                 $endTime = Carbon::parse($validated['end_time']);
-                
+
                 // Debug per verificare che le date siano correttamente parsate
                 // Log::info("Start time: " . $startTime->toDateTimeString());
                 // Log::info("End time: " . $endTime->toDateTimeString());
@@ -96,11 +97,14 @@ class UserDashboardController extends Controller
                     'status' => Rental::STATUS_ACTIVE
                 ]);
 
+                // Invia notifica di conferma
+                $user = Auth::user();
+                $user->notify(new RentalConfirmationNotification($rental));
                 $vehicle->update(['status' => 'rented']);
 
                 // Usa la variabile $rental in qualche modo
                 return redirect()->route('user.rentals')
-                               ->with('success', 'Noleggio #' . $rental->id . ' effettuato con successo!');
+                    ->with('success', 'Noleggio #' . $rental->id . ' effettuato con successo!');
             });
         } catch (\Exception $e) {
             return back()->withErrors(['error' => $e->getMessage()]);

@@ -8,7 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class RentalExpiredNotification extends Notification
+class RentalExpiredNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -28,7 +28,7 @@ class RentalExpiredNotification extends Notification
             ->greeting('Gentile ' . $notifiable->name)
             ->line('Il tuo noleggio per il veicolo ' . $this->rental->vehicle->model . ' è scaduto.')
             ->line('Data fine noleggio: ' . $this->rental->end_time)
-            ->action('Visualizza Dettagli', route('rentals.show', $this->rental))
+            ->action('Visualizza Dettagli', route('user.rentals.show', $this->rental))
             ->line('Ti preghiamo di completare il noleggio o rinnovarlo.');
     }
 
