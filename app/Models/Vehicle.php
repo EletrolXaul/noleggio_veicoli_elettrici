@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Carbon\Carbon;
 
 class Vehicle extends Model
 {
@@ -30,9 +31,20 @@ class Vehicle extends Model
         return $this->hasMany(Rental::class);
     }
 
-    public function isAvailable(): bool
+    public function isAvailable($startTime = null, $endTime = null): bool
     {
-        return $this->status === self::STATUS_AVAILABLE;
+        // Se il veicolo è in manutenzione, non è disponibile
+        if ($this->status === self::STATUS_MAINTENANCE) {
+            return false;
+        }
+        
+        // Se non vengono specificate le date, controlla solo se non è in manutenzione
+        if ($startTime === null || $endTime === null) {
+            return true;
+        }
+        
+        // Verifica se ci sono sovrapposizioni con altri noleggi attivi
+        return !$this->hasOverlappingRentals($startTime, $endTime);
     }
 
     public function activeRentals(): HasMany
@@ -43,11 +55,29 @@ class Vehicle extends Model
     // Controlla sovrapposizioni noleggi
     public function hasOverlappingRentals($startTime, $endTime): bool
     {
+        $startDateTime = Carbon::parse($startTime);
+        $endDateTime = Carbon::parse($endTime);
+        
         return $this->rentals()
             ->where('status', Rental::STATUS_ACTIVE)
-            ->where(function($query) use ($startTime, $endTime) {
-                $query->whereBetween('start_time', [$startTime, $endTime])
-                    ->orWhereBetween('end_time', [$startTime, $endTime]);
+            ->where(function($query) use ($startDateTime, $endDateTime) {
+                // Controlla se c'è sovrapposizione:
+                // - Inizio del nuovo noleggio è tra inizio e fine di un noleggio esistente
+                // - Fine del nuovo noleggio è tra inizio e fine di un noleggio esistente
+                // - Il nuovo noleggio copre completamente un noleggio esistente
+                $query->where(function($q) use ($startDateTime, $endDateTime) {
+                    // Il nuovo noleggio inizia durante un noleggio esistente
+                    $q->where('start_time', '<=', $startDateTime)
+                      ->where('end_time', '>=', $startDateTime);
+                })->orWhere(function($q) use ($startDateTime, $endDateTime) {
+                    // Il nuovo noleggio finisce durante un noleggio esistente
+                    $q->where('start_time', '<=', $endDateTime)
+                      ->where('end_time', '>=', $endDateTime);
+                })->orWhere(function($q) use ($startDateTime, $endDateTime) {
+                    // Il nuovo noleggio copre completamente un noleggio esistente
+                    $q->where('start_time', '>=', $startDateTime)
+                      ->where('end_time', '<=', $endDateTime);
+                });
             })->exists();
     }
 }

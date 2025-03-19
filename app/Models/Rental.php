@@ -72,6 +72,13 @@ class Rental extends Model
     // Calcola il costo totale
     public static function calculateCost($startTime, $endTime, $hourlyRate): float
     {
-        return Carbon::parse($startTime)->diffInHours(Carbon::parse($endTime)) * $hourlyRate;
+        $startDateTime = Carbon::parse($startTime);
+        $endDateTime = Carbon::parse($endTime);
+        
+        // Calcola la differenza in ore con precisione al decimale
+        $hoursDiff = $endDateTime->diffInMinutes($startDateTime) / 60;
+        
+        // Arrotonda a 2 decimali per il calcolo del costo
+        return round($hoursDiff * $hourlyRate, 2);
     }
 }

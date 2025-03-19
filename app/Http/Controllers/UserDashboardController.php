@@ -55,38 +55,25 @@ class UserDashboardController extends Controller
 
         try {
             return DB::transaction(function () use ($validated, $vehicle) {
-                if (!$vehicle->isAvailable()) {
-                    throw new \Exception('Questo veicolo non è disponibile.');
-                }
-
                 $startTime = Carbon::parse($validated['start_time']);
                 $endTime = Carbon::parse($validated['end_time']);
-
-                // Debug per verificare che le date siano correttamente parsate
-                // Log::info("Start time: " . $startTime->toDateTimeString());
-                // Log::info("End time: " . $endTime->toDateTimeString());
-
-                // Verifica sovrapposizioni
-                if ($vehicle->hasOverlappingRentals($startTime, $endTime)) {
-                    throw new \Exception('Il veicolo è già prenotato in questo periodo.');
+                
+                // Usa il nuovo metodo isAvailable con date specifiche
+                if (!$vehicle->isAvailable($startTime, $endTime)) {
+                    throw new \Exception('Questo veicolo non è disponibile nelle date selezionate.');
                 }
-
+                
                 // Verifica durata minima e massima
                 if ($endTime->lt($startTime->copy()->addHour())) {
                     throw new \Exception('La durata minima del noleggio è di 1 ora.');
                 }
 
-                if ($endTime->gt($startTime->copy()->addDays(180))) { // 180 giorni (6 mesi)
+                if ($endTime->gt($startTime->copy()->addDays(180))) {
                     throw new \Exception('La durata massima del noleggio è di 180 giorni.');
                 }
 
-                // Calcola le ore per il costo totale
-                $hours = $endTime->diffInHours($startTime, false);
-                if ($hours <= 0) {
-                    $hours = 1; // Minimo un'ora per il calcolo del costo
-                }
-
-                $totalCost = $hours * $vehicle->hourly_rate;
+                // Usa il metodo calculateCost migliorato
+                $totalCost = Rental::calculateCost($startTime, $endTime, $vehicle->hourly_rate);
 
                 $rental = Rental::create([
                     'vehicle_id' => $vehicle->id,
@@ -97,12 +84,12 @@ class UserDashboardController extends Controller
                     'status' => Rental::STATUS_ACTIVE
                 ]);
 
-                // Invia notifica di conferma
-                $user = Auth::user();
-                $user->notify(new RentalConfirmationNotification($rental));
-                $vehicle->update(['status' => 'rented']);
-
-                // Usa la variabile $rental in qualche modo
+                // Notifica l'utente
+                Auth::user()->notify(new RentalConfirmationNotification($rental));
+                
+                // Non cambiare lo status del veicolo a "rented" qui
+                // Il veicolo rimane disponibile per altre date
+                
                 return redirect()->route('user.rentals')
                     ->with('success', 'Noleggio #' . $rental->id . ' effettuato con successo!');
             });

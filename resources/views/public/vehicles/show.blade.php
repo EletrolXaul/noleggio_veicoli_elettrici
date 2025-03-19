@@ -1,6 +1,6 @@
 @extends('layouts.guest')
 
-@section('title', $vehicle->model)
+@section('title', 'Dettaglio Veicolo')
 
 @section('content')
 <div class="py-12">
@@ -48,7 +48,7 @@
                     @if($vehicle->isAvailable())
                     <div>
                         <h2 class="text-xl font-semibold mb-4">Prenota Ora</h2>
-                        <form action="{{ route('rentals.book', $vehicle) }}" method="POST" class="space-y-4">
+                        <form action="{{ route('rentals.book', $vehicle) }}" method="POST" class="space-y-4" id="booking-form">
                             @csrf
                             <input type="hidden" name="vehicle_id" value="{{ $vehicle->id }}">
                             <input type="hidden" name="user_id" value="{{ Auth::id() }}">
@@ -57,6 +57,7 @@
                                 <label class="block text-sm font-medium text-gray-700">Data e Ora Inizio</label>
                                 <input type="datetime-local" 
                                        name="start_time" 
+                                       id="start_time"
                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500" 
                                        min="{{ now()->format('Y-m-d\TH:i') }}"
                                        max="{{ now()->addYear()->format('Y-m-d\TH:i') }}"
@@ -71,6 +72,7 @@
                                 <label class="block text-sm font-medium text-gray-700">Data e Ora Fine</label>
                                 <input type="datetime-local" 
                                        name="end_time" 
+                                       id="end_time"
                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                        min="{{ now()->format('Y-m-d\TH:i') }}"
                                        max="{{ now()->addYear()->addMonths(6)->format('Y-m-d\TH:i') }}"
@@ -79,6 +81,10 @@
                                 @error('end_time')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
+                            </div>
+
+                            <div class="price-estimate hidden">
+                                <p class="font-medium">Stima costo: <span id="estimated-cost">€0.00</span></p>
                             </div>
 
                             <button type="submit" 
@@ -112,8 +118,26 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const startTimeInput = document.querySelector('input[name="start_time"]');
-    const endTimeInput = document.querySelector('input[name="end_time"]');
+    const startTimeInput = document.querySelector('#start_time');
+    const endTimeInput = document.querySelector('#end_time');
+    const estimatedCostElement = document.querySelector('#estimated-cost');
+    const priceEstimateDiv = document.querySelector('.price-estimate');
+    const hourlyRate = {{ $vehicle->hourly_rate }};
+
+    // Funzione per calcolare e mostrare il costo stimato
+    function updateEstimatedCost() {
+        if (startTimeInput.value && endTimeInput.value) {
+            const startDate = new Date(startTimeInput.value);
+            const endDate = new Date(endTimeInput.value);
+            
+            if (endDate > startDate) {
+                const diffHours = (endDate - startDate) / 1000 / 60 / 60; // differenza in ore
+                const cost = (diffHours * hourlyRate).toFixed(2);
+                estimatedCostElement.textContent = `€${cost}`;
+                priceEstimateDiv.classList.remove('hidden');
+            }
+        }
+    }
 
     // Funzione per verificare la validità delle date
     function validateDates() {
@@ -121,13 +145,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const startDate = new Date(startTimeInput.value);
             const endDate = new Date(endTimeInput.value);
             
-            // Controlla che ci sia almeno un'ora di differenza (3600000 millisecondi = 1 ora)
+            // Controlla che ci sia almeno un'ora di differenza
             const diff = endDate.getTime() - startDate.getTime();
             if (diff < 3600000) {
                 alert("La durata minima del noleggio è di 1 ora.");
                 endTimeInput.value = '';
                 return false;
             }
+            
+            updateEstimatedCost();
         }
         return true;
     }
@@ -135,26 +161,23 @@ document.addEventListener('DOMContentLoaded', function() {
     startTimeInput.addEventListener('change', function() {
         const startDate = new Date(this.value);
         const maxEndDate = new Date(startDate);
-        // Modifica per permettere fino a 18 mesi (1 anno e mezzo)
-        maxEndDate.setMonth(startDate.getMonth() + 18); 
+        maxEndDate.setMonth(startDate.getMonth() + 6); 
         
-        // Imposta la data minima per end_time uguale alla data di inizio + 1 ora
         const minEndDate = new Date(startDate);
         minEndDate.setHours(minEndDate.getHours() + 1);
         
         endTimeInput.min = minEndDate.toISOString().slice(0, 16);
         endTimeInput.max = maxEndDate.toISOString().slice(0, 16);
         
-        if (endTimeInput.value && new Date(endTimeInput.value) <= startDate) {
-            endTimeInput.value = '';
-        } else if (endTimeInput.value && new Date(endTimeInput.value) > maxEndDate) {
-            endTimeInput.value = maxEndDate.toISOString().slice(0, 16);
+        if (endTimeInput.value) {
+            validateDates();
         }
     });
     
-    endTimeInput.addEventListener('change', validateDates);
+    endTimeInput.addEventListener('change', function() {
+        validateDates();
+    });
     
-    // Aggiungi validazione al form submit
     document.querySelector('form').addEventListener('submit', function(e) {
         if (!validateDates()) {
             e.preventDefault();
