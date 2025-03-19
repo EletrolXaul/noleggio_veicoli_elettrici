@@ -49,54 +49,57 @@
                     {{-- Form di contatto --}}
                     <div>
                         <h2 class="text-2xl font-semibold mb-4">Inviaci un Messaggio</h2>
-                        <form action="{{ route('contact.send') }}" method="POST" class="space-y-6">
-                            @csrf
-                            <div>
-                                <label for="name" class="block text-sm font-medium text-gray-700">Nome</label>
-                                <input type="text" name="name" id="name" required 
-                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                                       value="{{ old('name') }}">
-                                @error('name')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
+                        
+                        @auth
+                            <form action="{{ route('contact.send') }}" method="POST" class="space-y-6">
+                                @csrf
+                                {{-- Campi nascosti per nome ed email dell'utente loggato --}}
+                                <input type="hidden" name="name" value="{{ auth()->user()->name }}">
+                                <input type="hidden" name="email" value="{{ auth()->user()->email }}">
+                                
+                                <div class="mb-4">
+                                    <p class="text-gray-700">Invio messaggio come: <strong>{{ auth()->user()->name }}</strong> ({{ auth()->user()->email }})</p>
+                                </div>
 
-                            <div>
-                                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                                <input type="email" name="email" id="email" required 
-                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                                       value="{{ old('email') }}">
-                                @error('email')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
+                                <div>
+                                    <label for="subject" class="block text-sm font-medium text-gray-700">Oggetto</label>
+                                    <input type="text" name="subject" id="subject" required 
+                                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                          value="{{ old('subject') }}">
+                                    @error('subject')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
 
-                            <div>
-                                <label for="subject" class="block text-sm font-medium text-gray-700">Oggetto</label>
-                                <input type="text" name="subject" id="subject" required 
-                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                                       value="{{ old('subject') }}">
-                                @error('subject')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
+                                <div>
+                                    <label for="message" class="block text-sm font-medium text-gray-700">Messaggio</label>
+                                    <textarea name="message" id="message" rows="4" required
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">{{ old('message') }}</textarea>
+                                    @error('message')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
 
-                            <div>
-                                <label for="message" class="block text-sm font-medium text-gray-700">Messaggio</label>
-                                <textarea name="message" id="message" rows="4" required
-                                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">{{ old('message') }}</textarea>
-                                @error('message')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
+                                <div class="flex justify-end">
+                                    <button type="submit" 
+                                            class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+                                        Invia Messaggio
+                                    </button>
+                                </div>
+                            </form>
+                        @else
+                            <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-md">
+                                <p class="text-yellow-800">Per inviarci un messaggio, effettua l'accesso al tuo account.</p>
+                                <div class="mt-4">
+                                    <a href="{{ route('login') }}" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+                                        Accedi
+                                    </a>
+                                    <a href="{{ route('register') }}" class="ml-2 text-blue-500 hover:underline">
+                                        Registrati
+                                    </a>
+                                </div>
                             </div>
-
-                            <div class="flex justify-end">
-                                <button type="submit" 
-                                        class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-                                    Invia Messaggio
-                                </button>
-                            </div>
-                        </form>
+                        @endauth
 
                         @if(session('success'))
                             <div class="mt-4 p-4 bg-green-100 text-green-700 rounded-md">
